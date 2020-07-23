@@ -12,6 +12,8 @@ build/
 develop-eggs/
 dist/
 downloads/
+include/
+scripts/
 eggs/
 .eggs/
 lib/
@@ -127,3 +129,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+launch.json
+settings.json
+pyvenv.cfg
