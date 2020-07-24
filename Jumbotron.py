@@ -1,6 +1,19 @@
 import pygame
 from pygame.locals import KEYDOWN, K_ESCAPE
 
+CHARACTER_HEIGHT = 13
+CHARACTER_WIDTH = 8
+
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+
+LED_RADIUS = 5
+LED_DIAMETER = LED_RADIUS * 2
+
+COLOR_BACKGROUND = (0, 0, 128)
+COLOR_LED_ON = (200, 200, 0)
+COLOR_LED_OFF = (150, 50, 0)
+
 # Bitmap for text display, courtsey of Silicon Labs
 # https://courses.cs.washington.edu/courses/cse457/98a/tech/OpenGL/font.c
 letters = [
@@ -194,37 +207,53 @@ letters = [
         0x0f, 0x1c, 0x18, 0x18, 0x18, 0xf0],
     [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x06, 0x8f, 0xf1, 0x60, 0x00, 0x00, 0x00]]
 
-
 if __name__ == "__main__":
-    pygame.init()
 
-    SCREEN_WIDTH = 800
-    SCREEN_HEIGHT = 600
+    pygame.init()
 
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     running = True
-    screen.fill((0, 0, 128))
+    screen.fill(COLOR_BACKGROUND)
 
-    for y in range(13):
-        mask = int(128)
-        byte = letters[(65 - 32)][13-y-1]
-        #print(mask)
-        print(byte)
-        for x in range(8):
-            if (int(byte) & int(mask)):
+    message = "Hello,World!"
+
+    character_number = 0
+    for letter in message:
+
+        ascii = ord(letter)
+
+        for y in range(CHARACTER_HEIGHT):
+
+            mask = int(128)
+            byte = letters[(ascii - 32)][13 - y - 1]
+
+            for x in range(CHARACTER_WIDTH):
+
+                x_offset = ((x * LED_DIAMETER) + 2) + \
+                    (character_number * (CHARACTER_WIDTH*(LED_DIAMETER))) +LED_RADIUS
+
+                y_offset = ((y * LED_DIAMETER) + 2) + LED_RADIUS
+
+                led_color = COLOR_LED_OFF
+                if (int(byte) & int(mask)):
+                    led_color = COLOR_LED_ON
+
                 pygame.draw.circle(
-                    screen, (200, 200, 0), (x * 10 + 8, y * 10 + 8), 4)
-            else:
-                pygame.draw.circle(
-                    screen, (150, 50, 0), (x * 10 + 8, y * 10 + 8), 4)
-            mask = mask / 2
+                    screen, led_color, (x_offset, y_offset), LED_RADIUS)
+
+                mask = mask / 2
+
+        character_number = character_number + 1
 
     pygame.display.update()
 
     while running:
+
         for event in pygame.event.get():
+
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     running = False
+
             if event.type == pygame.QUIT:
                 running = False
